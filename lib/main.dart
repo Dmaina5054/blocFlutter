@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import './cubit/countercubit_cubit.dart';
+import 'package:bottom_bar_with_sheet/bottom_bar_with_sheet.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,11 +16,11 @@ class MyApp extends StatelessWidget {
     return BlocProvider<CountercubitCubit>(
       create: (context) => CountercubitCubit(),
       child: MaterialApp(
-        title: 'Flutter Demo',
+        title: 'State Management',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: const MyHomePage(title: 'Flutter Demo Home Page'),
+        home: const MyHomePage(title: 'Flutter Bloc STteeeeee'),
       ),
     );
   }
@@ -41,35 +42,68 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
+
+      //bottomsheet here
+      bottomNavigationBar: BottomBarWithSheet(
+        selectedIndex: 0,
+        sheetChild: Center(
+            child: BlocListener<CountercubitCubit, CountercubitState>(
+          listener: (context, state) {
+            // TODO: implement listener
+          },
+          child: BlocBuilder<CountercubitCubit, CountercubitState>(
+            builder: (context, state) {
+              //manipulate state
+              if (state.counterValue == 5) {
+                return Column(
+                  children: [Text('Heey..number 5'), Icon(Icons.looks_5)],
+                );
+              }
+              if (state.counterValue == 4) {
+                return Column(
+                  children: [
+                    Text('Heey..number 4'),
+                    Icon(Icons.looks_4_rounded)
+                  ],
+                );
+              }
+              return Text(
+                '${state.counterValue}',
+                style: Theme.of(context).textTheme.headline4,
+              );
+            },
+          ),
+        )),
+        // ignore: prefer_const_constructors
+        bottomBarTheme: BottomBarTheme(
+          mainButtonPosition: MainButtonPosition.middle,
+        ),
+        mainActionButtonTheme: MainActionButtonTheme(
+            size: 60,
+            color: const Color(0xFF2B65E3),
+            icon: Icon(
+              Icons.add,
+              color: Colors.white,
+              size: 35,
+            )),
+        onSelectItem: (index) {
+          if (index == 0) {
+            BlocProvider.of<CountercubitCubit>(context).increment();
+          } else if (index == 1) {
+            BlocProvider.of<CountercubitCubit>(context).decrement();
+          }
+        },
+        items: [
+          BottomBarWithSheetItem(icon: Icons.add),
+          BottomBarWithSheetItem(icon: Icons.remove),
+          BottomBarWithSheetItem(icon: Icons.reset_tv),
+          BottomBarWithSheetItem(icon: Icons.settings),
+        ],
+      ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                FloatingActionButton(
-                  onPressed: () {
-                    BlocProvider.of<CountercubitCubit>(context).increment();
-                  },
-                  tooltip: 'Increment',
-                  child: const Icon(Icons.add),
-                ),
-                FloatingActionButton(
-                  onPressed: () {
-                    BlocProvider.of<CountercubitCubit>(context).decrement();
-                  },
-                  tooltip: 'Decrement',
-                  child: const Icon(Icons.remove),
-                ),
-                FloatingActionButton(
-                    onPressed: () {
-                      BlocProvider.of<CountercubitCubit>(context).reset();
-                    },
-                    tooltip: 'Reset',
-                    child: const Icon(Icons.restore_from_trash)),
-              ],
-            ),
             BlocBuilder<CountercubitCubit, CountercubitState>(
               builder: (context, state) {
                 //manipulate state
